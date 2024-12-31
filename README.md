@@ -33,7 +33,7 @@ Before starting the project, ensure you have the following installed on your mac
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/your-username/project-name.git
+   git clone https://github.com/JashwanthSA/Sentiment-Analysis-KYNHACK.git
    cd backend
    ```
 
@@ -42,7 +42,7 @@ Before starting the project, ensure you have the following installed on your mac
    To create an isolated environment for the Flask backend, use `venv`.
 
    ```bash
-   python -m venv venv
+   python -m venv env
    ```
 
 3. **Activate the virtual environment:**
@@ -50,13 +50,13 @@ Before starting the project, ensure you have the following installed on your mac
    On **Windows**:
 
    ```bash
-   venv\Scripts\activate
+   env\Scripts\activate
    ```
 
    On **Mac/Linux**:
 
    ```bash
-   source venv/bin/activate
+   source env/bin/activate
    ```
 
 4. **Install required dependencies:**

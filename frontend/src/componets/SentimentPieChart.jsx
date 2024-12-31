@@ -6,7 +6,8 @@ const SentimentPieChart = ({ sentimentData, title }) => {
   return (
     <div className="w-full max-w-lg mx-auto">
       <h2 className="text-xl font-semibold text-gray-700 mb-4">{title} Sentiment Distribution</h2>
-      <PieChart width={400} height={400}>
+      <PieChart width={600} height={400} 
+      className='bg-slate-900 rounded-xl my-6'>
         <Pie
           data={sentimentData}
           dataKey="value"

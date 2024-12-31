@@ -32,10 +32,19 @@ function Sentiment() {
     },
   ];
 
-  const barChartData = sentiments.map((post) => ({
-    name: post.title,
-    sentimentScore: post.post_sentiment.compound,
+  // const barChartData = sentiments.map((post) => ({
+  //   name: post.title,
+  //   sentimentScore: post.post_sentiment.compound,
+  // }));
+
+  const barChartData = sentiments.map((post, index) => ({
+    name: post.title || `Post ${index + 1}`,
+    positive: post.post_sentiment.pos || 0,
+    negative: post.post_sentiment.neg || 0,
+    neutral: post.post_sentiment.neu || 0,
+    keywords: post.post_keywords?.join(", ") || "No keywords",
   }));
+  
 
   console.log(sentiments);
   const formattedSentimentData = sentiments.map((sentiment, index) => ({
@@ -48,7 +57,7 @@ function Sentiment() {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10">
       {/* Header */}
-      <h1 className="text-3xl font-bold text-red-600 mb-6">
+      <h1 className="text-3xl font-bold text-white bg-red-600 w-10/12 text-center py-2 rounded-xl shadow-xl mb-10">
         Reddit Sentiment Analyzer
       </h1>
 
@@ -58,9 +67,9 @@ function Sentiment() {
       </div>
 
       {loading ? (
-        <span className="mt-4 loading loading-spinner loading-lg "></span>
+        <span className="mt-4 loading loading-spinner loading-lg my-12 mb-6"></span>
       ) : (
-        <div className="w-full max-w-4xl mt-10 px-4">
+        <div className="w-full max-w-4xl mt-10 px-4 mr-40">
           {sentiments.length > 0 ? (
             <div className="space-y-10">
               {/* Overall Sentiment Pie Chart */}
@@ -73,19 +82,29 @@ function Sentiment() {
               <SentimentBarChart barChartData={barChartData} title="Overall" />
               <SentimentTrendChart sentimentData={formattedSentimentData} />
               <div className="bg-red-100 p-4 rounded-lg shadow-lg border-2 border-red-500">
-  <h1 className="text-red-800 font-semibold">Click on a post to explore detailed stats about its content, comments, and extracted keywords.</h1>
-</div>
+                <h1 className="text-red-800 font-semibold">Click on a post to explore detailed stats about its content, comments, and extracted keywords.</h1>
+              </div>
 
 
               <SentimentDisplay sentiments={sentiments} />
             </div>
           ) : (
-            <p className="text-center text-gray-500">
-              Enter a subreddit to see sentiment analysis.
+            <p className="text-center text-gray-500 m-12">
+              "Enter a subreddit to see sentiment analysis."
             </p>
           )}
         </div>
       )}
+
+      <footer 
+      className="bg-black text-white w-full h-32 text-center py-8 rounded-xl font-bold">
+        Team MENtion &copy;
+        2024 | KYN-HACK
+        <hr className="w-5/12 mx-auto" />
+        <div>
+          Madhavan | Jashwanth | Murali S
+        </div>
+      </footer>
     </div>
   );
 }
