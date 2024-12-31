@@ -1,0 +1,10 @@
+venv/
+env/
+*.env/
+
+# Python bytecode files
+__pycache__/
+*.py[cod]
+*.pyo
+
+*.env
