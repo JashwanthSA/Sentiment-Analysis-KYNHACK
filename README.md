@@ -50,7 +50,11 @@ Before starting the project, ensure you have the following installed on your mac
    On **Windows**:
 
    ```bash
-   env\Scripts\activate
+
+
+
+venv\bin\activate
+
    ```
 
    On **Mac/Linux**:
