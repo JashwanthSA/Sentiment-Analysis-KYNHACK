@@ -1,34 +1,65 @@
-/* eslint-disable react/prop-types */
 import { useState } from "react";
 import SentimentPieChart from "./SentimentPieChart";
 import SentimentBarChart from "./SentimentBarChart";
 import ReactMarkdown from "react-markdown";
+import { saveAs } from "file-saver";
+import Papa from "papaparse"; // Import PapaParse
 
 const SentimentDisplay = ({ sentiments }) => {
-  // State to hold the selected post
   const [selectedPost, setSelectedPost] = useState(null);
 
-  // Function to handle post click
   const handlePostClick = (post) => {
     setSelectedPost(post);
   };
 
-  // If a post is selected, display the post details and comments
+  // Function to extract and format the required fields
+  const extractPostData = (post) => {
+    return {
+      title: post.title,
+      sentiment_score: post.post_sentiment.compound,
+      positive_score: post.post_sentiment.pos,
+      negative_score: post.post_sentiment.neg,
+      neutral_score: post.post_sentiment.neu,
+      url: post.url || "No URL available", // Replacing 'source' with 'url'
+    };
+  };
+
+  // Function to export data to CSV using PapaParse
+  const exportToCsv = (data, filename) => {
+    const formattedData = data.map(extractPostData); // Extract relevant data
+    const csv = Papa.unparse(formattedData); // Convert JSON data to CSV
+    const blob = new Blob([csv], {
+      type: "text/csv;charset=utf-8;",
+    });
+    saveAs(blob, filename); // Save the CSV file
+  };
+
+  // Function to export data to JSON format
+  const exportToJson = (data, filename) => {
+    const formattedData = data.map(extractPostData); // Extract relevant data
+    const json = JSON.stringify(formattedData, null, 2); // Convert JSON data to string with indentation
+    const blob = new Blob([json], {
+      type: "application/json;charset=utf-8;",
+    });
+    saveAs(blob, filename); // Save the JSON file
+  };
+
+  // If a post is selected, show post details and allow exporting
   if (selectedPost) {
     return (
       <div>
         <button
           onClick={() => setSelectedPost(null)}
-          className="text-blue-500 mb-4 inline-block"
+          className="font-semibold text-blue-700 mb-4 inline-block hover:underline transition duration-500"
         >
-          Back to posts list
+          ← Back to posts list
         </button>
 
-        <div className="mb-6 p-4 bg-white rounded shadow-md">
-          <h3 className="text-xl font-semibold text-gray-800">
+        <div className="mb-6 p-4 bg-white rounded shadow-md border-red-700">
+          <h3 className="text-xl font-semibold text-white m-4 bg-red-500 p-2 rounded-lg">
             {selectedPost.title}
           </h3>
-          <ReactMarkdown className="text-gray-600">
+          <ReactMarkdown className="text-gray-600 my-4">
             {selectedPost.selftext || "No description available."}
           </ReactMarkdown>
 
@@ -53,19 +84,28 @@ const SentimentDisplay = ({ sentiments }) => {
             ]}
             title={selectedPost.title}
           />
+
+          <hr className=" mx-auto" /> &nbsp;
+
           <SentimentBarChart
             barChartData={[
               {
                 name: "Positive",
-                sentimentScore: selectedPost.post_sentiment.pos,
+                positive: selectedPost.post_sentiment.pos,
+                negative: 0,
+                neutral: 0,
               },
               {
                 name: "Neutral",
-                sentimentScore: selectedPost.post_sentiment.neu,
+                positive: 0,
+                negative: 0,
+                neutral: selectedPost.post_sentiment.neu,
               },
               {
                 name: "Negative",
-                sentimentScore: selectedPost.post_sentiment.neg,
+                positive: 0,
+                negative: selectedPost.post_sentiment.neg,
+                neutral: 0,
               },
             ]}
             title={selectedPost.title}
@@ -91,8 +131,7 @@ const SentimentDisplay = ({ sentiments }) => {
             </div>
           )}
           <div className="mt-2">
-            <strong>Sentiment Score:</strong>{" "}
-            {selectedPost.post_sentiment.compound}
+            <strong>Sentiment Score:</strong> {selectedPost.post_sentiment.compound}
           </div>
 
           <h4 className="mt-4 text-lg font-semibold text-gray-700">Comments</h4>
@@ -111,15 +150,21 @@ const SentimentDisplay = ({ sentiments }) => {
                       barChartData={[
                         {
                           name: "Positive",
-                          sentimentScore: comment.sentiment.pos,
+                          positive: comment.sentiment.pos,
+                          negative: 0,
+                          neutral: 0,
                         },
                         {
                           name: "Neutral",
-                          sentimentScore: comment.sentiment.neu,
+                          positive: 0,
+                          negative: 0,
+                          neutral: comment.sentiment.neu,
                         },
                         {
                           name: "Negative",
-                          sentimentScore: comment.sentiment.neg,
+                          positive: 0,
+                          negative: comment.sentiment.neg,
+                          neutral: 0,
                         },
                       ]}
                       title={`Sentiment for Comment ${index + 1}`}
@@ -137,13 +182,47 @@ const SentimentDisplay = ({ sentiments }) => {
             )}
           </ul>
         </div>
+
+        {/* Export Button */}
+        <div className="mt-4">
+          <button
+            onClick={() => exportToCsv([selectedPost], "selectedPostData.csv")}
+            className="p-2 bg-blue-500 text-white rounded hover:bg-blue-700 mr-4"
+          >
+            Export to CSV
+          </button>
+          <button
+            onClick={() => exportToJson([selectedPost], "selectedPostData.json")}
+            className="p-2 bg-green-500 text-white rounded hover:bg-green-700"
+          >
+            Export to JSON
+          </button>
+        </div>
       </div>
     );
   }
 
-  // If no post is selected, display the list of posts
+  // If no post is selected, display the list of posts and export options
   return (
     <div>
+      <div className="mb-6">
+        {/* Export Buttons for Overall Data */}
+        <div className="mb-4">
+          <button
+            onClick={() => exportToCsv(sentiments, "sentimentsData.csv")}
+            className="p-2 bg-blue-500 text-white rounded hover:bg-blue-700 mr-4"
+          >
+            Export All to CSV
+          </button>
+          <button
+            onClick={() => exportToJson(sentiments, "sentimentsData.json")}
+            className="p-2 bg-green-500 text-white rounded hover:bg-green-700"
+          >
+            Export All to JSON
+          </button>
+        </div>
+      </div>
+
       {sentiments.map((post, index) => {
         const postSentimentData = [
           { name: "Positive", value: post.post_sentiment.pos, fill: "#4caf50" },
@@ -152,9 +231,24 @@ const SentimentDisplay = ({ sentiments }) => {
         ];
 
         const postBarChartData = [
-          { name: "Positive", sentimentScore: post.post_sentiment.pos },
-          { name: "Neutral", sentimentScore: post.post_sentiment.neu },
-          { name: "Negative", sentimentScore: post.post_sentiment.neg },
+          {
+            name: "Positive",
+            positive: post.post_sentiment.pos,
+            negative: 0,
+            neutral: 0,
+          },
+          {
+            name: "Neutral",
+            positive: 0,
+            negative: 0,
+            neutral: post.post_sentiment.neu,
+          },
+          {
+            name: "Negative",
+            positive: 0,
+            negative: post.post_sentiment.neg,
+            neutral: 0,
+          },
         ];
 
         return (
@@ -163,27 +257,19 @@ const SentimentDisplay = ({ sentiments }) => {
             className="mb-6 p-4 bg-white rounded shadow-md cursor-pointer"
             onClick={() => handlePostClick(post)}
           >
-            <h3 className="text-xl font-semibold text-gray-800">
+            <h3 className="text-xl font-semibold text-white m-4 bg-red-500 p-2 rounded-lg">
               {post.title}
             </h3>
-            <ReactMarkdown className="text-gray-600">
+            <ReactMarkdown className="text-gray-600 m-4">
               {post.selftext || "No description available."}
             </ReactMarkdown>
 
             {/* Sentiment Analysis for the Post */}
-            <SentimentPieChart
-              className="mt-[20px] "
-              sentimentData={postSentimentData}
-              title={post.title}
-            />
-            <SentimentBarChart
-              barChartData={postBarChartData}
-              title={post.title}
-            />
+            <SentimentPieChart sentimentData={postSentimentData} title={post.title} />
 
-            <div className="mt-2">
-              <strong className="text-red-600">Sentiment Score:</strong> <span className="text-bold">{post.post_sentiment.compound}</span>
-            </div>
+            <hr className="mx-auto" /> &nbsp;
+
+            <SentimentBarChart barChartData={postBarChartData} title={post.title} />
           </div>
         );
       })}
@@ -192,3 +278,4 @@ const SentimentDisplay = ({ sentiments }) => {
 };
 
 export default SentimentDisplay;
+

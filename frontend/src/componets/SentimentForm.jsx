@@ -40,17 +40,17 @@ const SentimentForm = ({ onAnalyze,setLoading }) => {
           <input
             id="subreddit"
             type="text"
-            placeholder="e.g., learnpython"
+            placeholder="e.g., ReactJS"
             value={subreddit}
             onChange={(e) => setSubreddit(e.target.value)}
-            className="w-full px-4 py-2 mt-1 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400"
+            className="w-full px-4 py-2 mt-1 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 focus-within:bg-slate-200 font-semibold border-slate-900"
           />
         </div>
         {error && <p className="text-sm text-red-500">{error}</p>}
         <div className="text-center">
           <button
             type="submit"
-            className="px-6 py-2 text-white bg-red-400 rounded-lg shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            className="px-6 py-2 text-white bg-red-500 rounded-lg shadow transition duration-300 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
           >
             Analyze
           </button>
