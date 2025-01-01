@@ -1,4 +1,4 @@
-// pages/Sentiment.js
+
 import { useState } from "react";
 import SentimentForm from "../componets/SentimentForm";
 import SentimentPieChart from "../componets/SentimentPieChart";
@@ -13,7 +13,7 @@ function Sentiment() {
     setSentiments(analysis);
   };
 
-  // Prepare overall sentiment data
+  
   const sentimentData = [
     {
       name: "Positive",
@@ -44,7 +44,6 @@ function Sentiment() {
     neutral: post.post_sentiment.neu || 0,
     keywords: post.post_keywords?.join(", ") || "No keywords",
   }));
-  
 
   console.log(sentiments);
   const formattedSentimentData = sentiments.map((sentiment, index) => ({
@@ -61,7 +60,7 @@ function Sentiment() {
         Reddit Sentiment Analyzer
       </h1>
 
-      {/* Form Section */}
+      
       <div className="w-full max-w-2xl px-4">
         <SentimentForm onAnalyze={handleAnalysis} setLoading={setLoading} />
       </div>
@@ -72,39 +71,30 @@ function Sentiment() {
         <div className="w-full max-w-4xl mt-10 px-4 mr-40">
           {sentiments.length > 0 ? (
             <div className="space-y-10">
-              {/* Overall Sentiment Pie Chart */}
+            
               <SentimentPieChart
                 sentimentData={sentimentData}
                 title="Overall"
               />
 
-              {/* Overall Sentiment Bar Chart */}
               <SentimentBarChart barChartData={barChartData} title="Overall" />
               <SentimentTrendChart sentimentData={formattedSentimentData} />
               <div className="bg-red-100 p-4 rounded-lg shadow-lg border-2 border-red-500">
-                <h1 className="text-red-800 font-semibold">Click on a post to explore detailed stats about its content, comments, and extracted keywords.</h1>
+                <h1 className="text-red-800 font-semibold">
+                  Click on a post to explore detailed stats about its content,
+                  comments, and extracted keywords.
+                </h1>
               </div>
-
 
               <SentimentDisplay sentiments={sentiments} />
             </div>
           ) : (
             <p className="text-center text-gray-500 m-12">
-              "Enter a subreddit to see sentiment analysis."
+              Enter a valid subreddit to see sentiment analysis. 
             </p>
           )}
         </div>
       )}
-
-      <footer 
-      className="bg-black text-white w-full h-32 text-center py-8 rounded-xl font-bold">
-        Team MENtion &copy;
-        2024 | KYN-HACK
-        <hr className="w-5/12 mx-auto" />
-        <div>
-          Madhavan | Jashwanth | Murali S
-        </div>
-      </footer>
     </div>
   );
 }
